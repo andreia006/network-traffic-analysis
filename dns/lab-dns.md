@@ -38,18 +38,17 @@ Network: Home Wi-Fi Network
 
 Software: Wireshark, Command Prompt
 
-Traffic Generated: TBA
+Traffic Generated: google.com, youtube.com
 
 ---
 
 # Procedure
 
-Document every step.
+### 1. Wireshark Setup:
+A common mistake when opening up wireshark is attempting to capture without selecting a network. There are many connections one could analyze such as a bluetooth network c, but for this lab demonstration I am using my home network.
 
-Example:
 
-1. Opened Wireshark.
-2. Selected the active Wi-Fi adapter.
+### 2. Selected the active Wi-Fi adapter.
 3. Started packet capture.
 4. Generated network traffic.
 5. Applied the display filter.
