@@ -1,4 +1,4 @@
-# Protocol Name
+# DNS Protocol Documentation
 
 | Category | Value |
 |----------|-------|
