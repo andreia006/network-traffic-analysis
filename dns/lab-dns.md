@@ -45,15 +45,21 @@ Traffic Generated: google.com, youtube.com
 # Procedure
 
 ### 1. Wireshark Setup:
-A common mistake when opening up wireshark is attempting to capture without selecting a network. There are many connections one could analyze such as a bluetooth network c, but for this lab demonstration I am using my home network.
+A common mistake when opening up wireshark is attempting to capture without selecting a network. There are many connections one could analyze such as a bluetooth network connection, but for this lab demonstration I am using my home network.
 
 
-### 2. Selected the active Wi-Fi adapter.
-3. Started packet capture.
-4. Generated network traffic.
-5. Applied the display filter.
-6. Analyzed packets.
-7. Saved packet capture.
+### 2. Packet Capture:
+After selecting a network, I began capturing for a good amount of time. I was able to see information of inbound and outbound IP addresses, port information, TTL, and bytes captured.
+
+
+### 3. Generated Network Traffic:
+I visited google.com and youtube.com as part of the traffic I manually generate on my machine several times. However, previously opened tabs are a curisoity of mine to find as well when  applying the filter.
+
+### 4. Display filter:
+I applied the DNS filter successfully and was able to see many websites under the info section. Under this section I was able to see query to and query responses and domain names. I am able to trace the "google.com" I visited several times, as well as "youtube.com". Curiously, other requests and responses from other domains such as "Steam" and "ChatGPT" were observed in the capture despite me not using the services actively. This highlights the fact that a computer, while appearing to, is never actually idle. Background services can periodically do DNS lookups for website changes, syncronize data, or verify server availability.
+
+### 5. Saved packet capture:
+For screenshotting and referencing what I have found, I saved the capture.
 
 ---
 
@@ -69,14 +75,13 @@ Replace with whatever protocol you're analyzing.
 
 # Packet Analysis
 
-Explain what packets you observed.
+### - What happened?
+I observed the flow of traffic with the DNS protocol filter to closely monitor DND behaviour in action. I was able to find the traffic I generated on purpose. I specifically focused on the Doamin Name System and the Standard Query. I looked for the response in which the IP address was provided and didn't realize a request can have several responses.
+I was able to see the communicated address in response, and Youtube specifically had different IP addresses it responded the query with (Answers RRs: 8, so 8 different addresses). After researching why, I came to the conclusion it could simply because it uses made IPs for load balancing purposes.
 
-Questions to answer:
+I mistaked the dst and src as the responses I was looking for. It is important to make the distinction that src and dst simply point out *who* is talking in the conversation but not an indicator towards what exactly is being communicated.
 
-- What happened?
-- Which devices communicated?
-- What information stood out?
-- Were there any repeated patterns?
+After analyzing a bit more of unrelated traffic under the same filter I picked up on the pattern in how the communication is happening and how responses show up.
 
 ---
 
