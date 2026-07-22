@@ -69,8 +69,6 @@ For screenshotting and referencing what I have found, I saved the capture.
 dns
 ```
 
-Replace with whatever protocol you're analyzing.
-
 ---
 
 # Packet Analysis
@@ -89,11 +87,11 @@ After analyzing a bit more of unrelated traffic under the same filter I picked u
 
 ### Example 1
 
-...
+<img width="1157" height="212" alt="Screenshot 2026-07-20 201740" src="https://github.com/user-attachments/assets/260a8ed5-1128-4623-982d-8edb35d8b801" />
 
 Explanation:
 
-...
+This is what I saw when I am referring to with the 8 Answer RRs. In the query response, you can see it responding with 8 IPS, the text cutting off. 
 
 ---
 
