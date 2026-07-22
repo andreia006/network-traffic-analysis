@@ -85,50 +85,18 @@ After analyzing a bit more of unrelated traffic under the same filter I picked u
 
 # Screenshots
 
-### Example 1
+### Screenshot 1
 
 <img width="1157" height="212" alt="Screenshot 2026-07-20 201740" src="https://github.com/user-attachments/assets/260a8ed5-1128-4623-982d-8edb35d8b801" />
 
 Explanation:
 
-This is what I saw when I am referring to with the 8 Answer RRs. In the query response, you can see it responding with 8 IPS, the text cutting off. 
-
----
-
-### Example 2
-
-...
-
-Explanation:
-
-...
+This is what I saw when I am referring to with the 8 Answer RRs. In the query response, you can see it responding with 8 IPS, the text cutting off. Here is also when I realized multiple querys and responses we sent. A response was sent before the actual DNS IP was sent.
 
 ---
 
 # What I Learned
 
-Summarize what you learned from the lab.
+In this lab I learned and gained a deeper understanding of the DNS protocol. While I had a general idea of what it was, practicing it hands-on on Wireshark helped me demistify missconceptions I was not aware I was carrying about the protocol. For example, DST and SRC and very different things from the actual response from a DNS phonebook. As well as why a query answer can come attached with more than one IP.
 
-Focus on concepts rather than memorization.
-
----
-
-# Interview Takeaway
-
-Imagine an interviewer asks:
-
-"Can you explain DNS?"
-
-Write the answer you'd confidently give.
-
-Keep it short (3–5 sentences).
-
----
-
-# Future Exploration
-
-Things I'd like to learn next:
-
-- Example
-- Example
-- Example
+From a security lense, I also gained knowledge about IPs themselves. I learned the importance of IPs in communicating with other networks.
