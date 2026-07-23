@@ -94,6 +94,9 @@ In this case, I was curious about generating the Network Break error. What I did
 icmp
 ```
 
+```text
+icmpv6
+```
 ---
 
 # Packet Analysis
@@ -143,4 +146,4 @@ This screenshot displays the intentional error displayed in Wireshark with the i
 
 # What I Learned
 
-In this lab, I went from not knowing what the protocol was beforehand to feeling quite comfortable with it's definition and what it does. I learned it can be a very useful tool for troubleshooting 
+In this lab, I went from not knowing what the protocol was beforehand to feeling quite comfortable with it's definition and what it does. I learned it can be a very useful tool for troubleshooting. It demonstrated how echo requests verify connectivity as well as ping utility to verify whether a target is reachable and traceroute to show the data's journey from the computer to it's target through hops within routers.
