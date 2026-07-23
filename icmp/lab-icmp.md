@@ -78,12 +78,13 @@ In the command prompt, I had typed tracert google.com. There, I was able to see 
 **2 - Severe Traffic Congestion:** A router is programmed to protect it's CPU during heavy load. One of these rules include prioritizing user traffic. Meaning if it has already received too many ICMP requests or it is busy it will begin to silently drop ICMP requests.
 
 
-**3 - Network Break:** This happens when the packet has reached a dead end. A cable is cut, the device is completely powered down our the routing table is misconfigured. The destination is not accessible at this point and will continue to show "Request Time Out" until the 30-hop maximum.
+**3 - Network Break:** This happens when the packet has reached a dead end. A cable is cut, the device is completely powered down our the routing table is misconfigured. The destination is not accessible at this point and will continue to show "Request Time Out" until the 30-hop maximum. Or it will displa an error "Destination net Unreachable".
 
 
 In this case, I was able to reach google.com, but the lather reason could be a valid reason why some requests times out.
 
 ### 6 - Generating Errors:
+In this case, I was curious about generating the Network Break error. What I did was tracert to an invalid IP address. This time I captured the error in wireshark. The same error I observed in the command prompt is the same I observed in wireshark. The TTL expired in transit as well as the network being unreachable.
 
 ---
 
@@ -98,12 +99,17 @@ icmp
 # Packet Analysis
 
 ### - What happened?
-I observed the flow of traffic with the DNS protocol filter to closely monitor DND behaviour in action. I was able to find the traffic I generated on purpose. I specifically focused on the Doamin Name System and the Standard Query. I looked for the response in which the IP address was provided and didn't realize a request can have several responses.
-I was able to see the communicated address in response, and Youtube specifically had different IP addresses it responded the query with (Answers RRs: 8, so 8 different addresses). After researching why, I came to the conclusion it could simply because it uses made IPs for load balancing purposes.
+To summarize my observations, there were clear patterns in the manner this protocol is used as well as expected behaviour depending on what is generated.
 
-I mistaked the dst and src as the responses I was looking for. It is important to make the distinction that src and dst simply point out *who* is talking in the conversation but not an indicator towards what exactly is being communicated.
 
-After analyzing a bit more of unrelated traffic under the same filter I picked up on the pattern in how the communication is happening and how responses show up.
+4 Responses, 4 Replies - This is common occurance with initiating echo requests and responses. Even if a domain/network is only pinged once, 4 responses and replies are not uncommon to see.
+
+
+Types of Echos - 8 for a request, 0 for a response.
+
+
+Sequence Number - The Sequence Number has to and matches bother the request and response. they must have the same sequence number.
+
 
 ---
 
@@ -111,16 +117,30 @@ After analyzing a bit more of unrelated traffic under the same filter I picked u
 
 ### Screenshot 1
 
-<img width="1157" height="212" alt="Screenshot 2026-07-20 201740" src="https://github.com/user-attachments/assets/260a8ed5-1128-4623-982d-8edb35d8b801" />
+<img width="767" height="365" alt="Screenshot 2026-07-23 175118" src="https://github.com/user-attachments/assets/f6b3d678-3a6f-4ece-bf31-fbc45bdc7151" />
 
 Explanation:
 
-This is what I saw when I am referring to with the 8 Answer RRs. In the query response, you can see it responding with 8 IPS, the text cutting off. Here is also when I realized multiple querys and responses we sent. A response was sent before the actual DNS IP was sent.
+This is the successful ping in the command prompt. Here we can also observe 4 responses from google.com and the average response speed. For GitHub it was an average of 31ms.
+
+### Screenshot 2
+
+<img width="962" height="182" alt="Screenshot 2026-07-23 180208" src="https://github.com/user-attachments/assets/2e55974c-268c-4093-9012-204ed0035112" />
+
+Explanation:
+
+This screenshot shows the back and forth reply and request in Wireshark with the ICMP filter. We can observe the sequence number in this screenshot. This was also traffic from google.com.
+
+### Screenshot 3
+
+<img width="845" height="247" alt="Screenshot 2026-07-23 185745" src="https://github.com/user-attachments/assets/5be6f636-be44-44c8-a1b9-7f0bed659291" />
+
+Explanation:
+
+This screenshot displays the intentional error displayed in Wireshark with the invalid IP address. We can observed the TTL expiration and the final Netowrk Unreachable Error.
 
 ---
 
 # What I Learned
 
-In this lab I learned and gained a deeper understanding of the DNS protocol. While I had a general idea of what it was, practicing it hands-on on Wireshark helped me demistify missconceptions I was not aware I was carrying about the protocol. For example, DST and SRC and very different things from the actual response from a DNS phonebook. As well as why a query answer can come attached with more than one IP.
-
-From a security lense, I also gained knowledge about IPs themselves. I learned the importance of IPs in communicating with other networks.
+In this lab, I went from not knowing what the protocol was beforehand to feeling quite comfortable with it's definition and what it does. I learned it can be a very useful tool for troubleshooting 
