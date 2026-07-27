@@ -1,31 +1,40 @@
 
-# DNS Protocol Documentation
+# TCP Protocol Documentation
 
 | Category | Value |
 |----------|-------|
 | Protocol | TCP |
 | OSI Layer | Transport (Layer 4) |
-| Primary Purpose | ... |
-| Tools Used | Wireshark, Windows Command Prompt |
+| Primary Purpose | Ensures data arrives accurately, in order, and without missing pieces to it's target. |
+| Tools Used | Wireshark |
 
 ---
 
 # Objective
 
-...
+The objective of this lab is to understand as a whole what the TCP protocol is, what it's responsible for and what it looks like in action. Generation of TCP traffic will be done in order to also better analyze *The Three-Way Handshake*.
 
 ---
 
 # Background
 
-### What is TCP?:
-...
+### What is the TCP protocol?:
+The TCP protocol, standing for Transmission Control Protocol is a protocol working at the transport layer that ensures all data delivery is ordered and reliable as well as error checked. For this to happen, a TCP connection must be established first before data transfer. This is where the **Three-Way Handshake* comes into play.
 
-### How does TCP work?:
-...
+**- Three-Way Handshake:** This is a TCP connection is initiated. The sender will send a packet with a **SYN** flag active. This tells the receiver "I want to connect" or "sync". The receiver will then send a packet with a **SYN** and **ACK** flag back to the sender. This tells the sender "I have received your request, and would also like to connect". Finally, the sender sends a packet with a **ACK** flag, which reads as an acknowledgement or "Alright, let's start". After this process a connection has been established and the payload transmission begins.
+
+### How does the TCP protocol work?:
+Immediately after a connection is established, data transmission begins. The transmission itself can face various challenges depending on various conditions. However the protocol acts as a manager to manage all of these circumstances with three main mechanisms:
+
+**- Tracking and Ordering:** TCP breaks larger files into smaller pieces called *segments* to fulfill network requirements. This process organizes segments as well before sending. However layer 3 protocols are still capable of shrinking segments into **fragments** if they still appear too big, though often avoided.
+Every byte of data then receives a **Sequence Number**. If a sender wanted to send a 3000 byte file, and due to the network's size limits the file must be broken into 1000 byte chunks- the sequence number starts where it begins processing. So the SN for the first segment would be 1 (1-1000), the second one would be 1001(1001-2000), and the third would be numbered 2001(2001-3000). After this, the receiver must send an **ACK** number which tells the sender what byte they expect next.
+
+
+**- Flow Control:** The receiver has a temporary storage area called a buffer.
+In every ACK packet the receiver sends, a *window size* value is included. This number indicates to the sender how many bytes of data it can handle at the moment. This value is not constant and can shrink if the receiver's app gets slow or other circumstances. It can most certainly also hit 0, which halts the sender from transmitting anything else until the receiver clears their buffer.
 
 ### Extra Information:
-...
+While the Three-Way Handshake is happening, at each phase a random Initial Sequence Number (ISN) is generated and used at each phase. At the first phase, the sender generates an ISN set to x. At the second stage, the receiver sets the number to X + 1 as acknowledgement and generates it's own ISN called y. At the third stage, the sender also sets the receiver's ISN to Y + 1 in acknowledgement.
 
 ---
 
@@ -35,7 +44,7 @@ Operating System: Windows 11
 
 Network: Home Wi-Fi Network
 
-Software: Wireshark, Command Prompt
+Software: Wireshark
 
 Traffic Generated: google.com, youtube.com, github.com
 
