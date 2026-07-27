@@ -1,4 +1,4 @@
-# DNS Protocol Documentation
+# ICMP Protocol Documentation
 
 | Category | Value |
 |----------|-------|
