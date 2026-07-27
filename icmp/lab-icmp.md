@@ -20,7 +20,7 @@ The purpose of this lab is to better understand the core functionality of the IC
 ### What is ICMP?:
 ICMP, standing for Internet Control Message Protocol is a protocol primarily used for communication diagnostics, report delivery errors and share operational information. Simplistically, it is a tool that gives out information about a commucation between two networks and facilitates network maintanence with this crucial information it provides.
 
-### How does a DNS work?:
+### How does ICMP work?:
 This protocol as mentioned provides tools for diagnostics. The most common ones being *ping* and *tracert (traceroute on Mac/Linux)*.
 
 
