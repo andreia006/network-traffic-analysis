@@ -65,10 +65,10 @@ Select a network to begin. For this lab I will be using my home wi-fi network.
 ### 2. Generated Network Traffic:
 I opened the chrome browser and captured my visits to microsoft.com, wikipedia.com and github.com onto wireshark.
 
-### 4. Display filter:
+### 3. Display filter:
 I appled the TCP filter at first to check on my findings. There were many things I didn't understand at first upon using the filter. Each flag appeared to be doubled but the three way handshake pattern was there. After some research there are a multitude of reasons why. Such as Wireshark itself, multiple connections to the same website for CSS, Java code, etc.. After more research I was able to find a suitable filter that allowed me to cleanly see TCP connection without other interference. I right clicked one of the packets went into Follow->TCP Stream. It set the tcp.stream eq 0 filter.
 
-### 5. Analyze The Traffic:
+### 4. Analyze The Traffic:
 I did notice new flags as well after the connection was established. **[PSH]** and **[FIN]**. Right after the last ACK from my device, my device sent a **[PSH,ACK]** flag to the receiver. I researched the meaning of this flag and it means to tell the website to "Send this information immediately, do not hold it in the buffer". Or in this specific scenario it is saying "Here is my request, push it to the web server app right now." which can be seen as an HTTP GET request. The server/website sends an **[ACK]** flag. Acknowledging the request and that it received the request safely.
 Then **[FIN, ACK]** is the beginning of the end of the connection. My computer initiated his. Which means, "I have no more data to send, I want to close my outbound channel". The website acknowledges this with an **[ACK]** flag; "Message received. I am stopping the tracking of the upload stream.". Then it sends the same **[FIN, ACK]** flag also stating it has nothing else to send. The final acknowldegment sent from my device ends the connection.
 
@@ -96,7 +96,7 @@ tcp.stream eq 0
 # Packet Analysis
 
 ### - What happened?
-...
+As I explained in my traffic analysis I successfully analyzed the procedures in which a TCP three way handshake happens and even how a four way handshake happens. Importantly, about the payload itself, Wireshark displays crucial information about the payload's length, and even transmission byte tracking information. Noteably, while I applied the correct filter in the end, the DNS protocol showed up along the TCP filter. This allowed me to also see in real time how protocols function in junction with others. A DNS request was initiated after data was transmitted, and after the receiver's acknowledgement a DNS response was given.
 
 
 ---
@@ -105,30 +105,22 @@ tcp.stream eq 0
 
 ### Screenshot 1
 
-...
+<img width="1472" height="408" alt="Screenshot 2026-07-29 160811(3)" src="https://github.com/user-attachments/assets/4d9f8de0-415c-4623-b13a-3629edf0ed38" />
 
 Explanation:
 
-...
+This screenshot shows the filter I used after right clicking a package. It shows the clear TCP path, as well as all the information I made discoveries about and explained in detail about what each field meant.
 
 ### Screenshot 2
 
-...
+<img width="497" height="180" alt="Screenshot 2026-07-29 164141" src="https://github.com/user-attachments/assets/c8a8d0e8-f7d2-47ef-bb35-671dba32cf1d" />
 
 Explanation:
 
-...
-
-### Screenshot 3
-
-...
-
-Explanation:
-
-...
+This screenshot is an observation about the size of the payload and segment data.
 
 ---
 
 # What I Learned
 
-...
+I learned about one of the most important protocols used everyday. It was definitely not as intuitive as DNS and ICMP, and definitely has deeper innerworkings than the ones I analyzed on previous protocols. I learned about the three-way handshake, communication flags, payload information crucial for transmission, transmission rules and how it is closed in the end with a four-way handshake.
