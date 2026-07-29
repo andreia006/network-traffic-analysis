@@ -12,7 +12,7 @@
 
 # Objective
 
-The objective of this lab is to understand as a whole what the TCP protocol is, what it's responsible for and what it looks like in action. Generation of TCP traffic will be done in order to also better analyze *The Three-Way Handshake*.
+The objective of this lab is to understand as a whole what the TCP protocol is, what it's responsible for and what it looks like in action. Generation of TCP traffic will be done in order to also better analyze *The Three-Way Handshake*, it's innerworkings and possibly when things go wrong.
 
 ---
 
@@ -33,8 +33,15 @@ Every byte of data then receives a **Sequence Number**. If a sender wanted to se
 **- Flow Control:** The receiver has a temporary storage area called a buffer.
 In every ACK packet the receiver sends, a *window size* value is included. This number indicates to the sender how many bytes of data it can handle at the moment. This value is not constant and can shrink if the receiver's app gets slow or other circumstances. It can most certainly also hit 0, which halts the sender from transmitting anything else until the receiver clears their buffer.
 
+
+**- Congestion Control:** The sender is not aware of how overloaded a router can be. So the transmission starts with very small amounts of data. If receiver ACKs are returned quickly, TCP assumes the network is clear and can double the amount of data being transmitted rapidly. However, if an ACK response isn't returned back to the sender for the next byte in a set amount of time (A packet is dropped), TCP instantly cuts down the transmission speed to relieve network pressure. From there, the slow start process can restart as needed.
+
 ### Extra Information:
 While the Three-Way Handshake is happening, at each phase a random Initial Sequence Number (ISN) is generated and used at each phase. At the first phase, the sender generates an ISN set to x. At the second stage, the receiver sets the number to X + 1 as acknowledgement and generates it's own ISN called y. At the third stage, the sender also sets the receiver's ISN to Y + 1 in acknowledgement.
+
+
+While TCP manages data transmission, things can still go wrong. If packet #2 arrives before packet #1, the receiver may hold packet #2 in memory but refuse to acknowledge it until the necessary packet arrives.
+Packet loss can also happen, which is in the event of a packet vanishing, the receiver will keep asking for the missing packet by sending duplicate ACKs. The sender is able to notice this and perform a fast transfer for the missing piece.
 
 ---
 
@@ -46,7 +53,7 @@ Network: Home Wi-Fi Network
 
 Software: Wireshark
 
-Traffic Generated: google.com, youtube.com, github.com
+Traffic Generated: microsoft.com, wikipedia.com, github.com
 
 ---
 
@@ -55,40 +62,23 @@ Traffic Generated: google.com, youtube.com, github.com
 ### 1. Wireshark Setup:
 Select a network to begin. For this lab I will be using my home wi-fi network.
 
-
-### 2. Command Prompt Setup:
-After selecting a network, I opened my command prompt to prepare to generate traffic using *ping*.
-
-
-### 3. Generated Network Traffic:
-I pinged google.com, youtube.com and github.com once per each in the command prompt as I ran the capture on Wireshark.
+### 2. Generated Network Traffic:
+I opened the chrome browser and captured my visits to microsoft.com, wikipedia.com and github.com onto wireshark.
 
 ### 4. Display filter:
-I applied the ICMP filter to view the traffic I generated. But as I did so, I stumbled upon a ICMPv6 filter. I researched this and discovered that ICMPv6 is an advanced version of ICMPv4, the protocol being observed in this lab. While the ICMPv4 version in an optional debugging tool, ICMPv6 is crucial to basic network functionality. Without it, local communication would break. It does not support fragmentation and enables v6 devices to generate their own IP address.
+I appled the TCP filter at first to check on my findings. There were many things I didn't understand at first upon using the filter. Each flag appeared to be doubled but the three way handshake pattern was there. After some research there are a multitude of reasons why. Such as Wireshark itself, multiple connections to the same website for CSS, Java code, etc.. After more research I was able to find a suitable filter that allowed me to cleanly see TCP connection without other interference. I right clicked one of the packets went into Follow->TCP Stream. It set the tcp.stream eq 0 filter.
 
+### 5. Analyze The Traffic:
+I did notice new flags as well after the connection was established. **[PSH]** and **[FIN]**. Right after the last ACK from my device, my device sent a **[PSH,ACK]** flag to the receiver. I researched the meaning of this flag and it means to tell the website to "Send this information immediately, do not hold it in the buffer". Or in this specific scenario it is saying "Here is my request, push it to the web server app right now." which can be seen as an HTTP GET request. The server/website sends an **[ACK]** flag. Acknowledging the request and that it received the request safely.
+Then **[FIN, ACK]** is the beginning of the end of the connection. My computer initiated his. Which means, "I have no more data to send, I want to close my outbound channel". The website acknowledges this with an **[ACK]** flag; "Message received. I am stopping the tracking of the upload stream.". Then it sends the same **[FIN, ACK]** flag also stating it has nothing else to send. The final acknowldegment sent from my device ends the connection.
 
-In regards to the ICMPv4 traffic, I was able to locate my generated traffic. I identified a Source and Destiation by IP, as well as a request and response. Typically 4 requests and 4 responses are initiated in a ping test and it is reflected in the filter. Upon analysing the Internet Control Message Protocol Tab, I was also able to see the type of echo. A (8) echo is a request while a (0) is a response.
+This the commencement of the connection AND closing combined is now a Four-Way Handshake.
 
+The interaction of the TCP, was very straightforward with the filter. But looking at the statistics some things mentioned previously as visible as well. The Window Size, Sequence, Length and MSS(Maximum Segment Size). The last two bits of information create a system on how data is transmitted at a deeper level. The Maximum Segment Size is established in the beginning of the connection. This maximum size prevents **fragmentation** as mentioned earlier. It as a typical limit agreed upon in which a packet bigger than that amount is to never be transmitted and needs to be turned into segments first. Length is exactly how large the size of the data actually is. For my capture, it was fairly small in the [PSH,ACK] request, coming around 2 length.
 
-While the time to live in all three ping tests was nowhere close to death, I noticed that compared to google.com and youtube.com github's response time is a lot slower. Youtube and Google border around 7-8 milliseconds while Github responded with a total of 31 milliseconds.
+All of these elements work together into a system. MSS sets a roof over the max size of a segment but how fast it's being transmitted still affects Window size and buffer overload. The sender can send as many packets under the MSS limit but as well as within the receiver's window. Once the window is closed, an ACK is necessary to keep going with a new window size. The Sequence statistic, as mentioned earlier also tracks at which byte it's tracking from. Sequence 1 and Len 2 means that it's tracking data from byte 1 to 2.
 
-### 5. Analyze with Tracert:
-In the command prompt, I had typed tracert google.com. There, I was able to see in real time all the hops between routers until data reached it's target. It displays the IPs of each router, but inside the journey the message "Request time out" appeared several times. I researched this as well, and 3 possible reasons for this behaviour is possible:
-
-
-**1 - Router is Configured To Hide:** Many enterprises and ISPs configure theur routers to drop ICMP traffic. This is a security feature to prevent revealing internal topology of a network to possible attackers.
-
-
-**2 - Severe Traffic Congestion:** A router is programmed to protect it's CPU during heavy load. One of these rules include prioritizing user traffic. Meaning if it has already received too many ICMP requests or it is busy it will begin to silently drop ICMP requests.
-
-
-**3 - Network Break:** This happens when the packet has reached a dead end. A cable is cut, the device is completely powered down our the routing table is misconfigured. The destination is not accessible at this point and will continue to show "Request Time Out" until the 30-hop maximum. Or it will displa an error "Destination net Unreachable".
-
-
-In this case, I was able to reach google.com, but the lather reason could be a valid reason why some requests times out.
-
-### 6 - Generating Errors:
-In this case, I was curious about generating the Network Break error. What I did was tracert to an invalid IP address. This time I captured the error in wireshark. The same error I observed in the command prompt is the same I observed in wireshark. The TTL expired in transit as well as the network being unreachable.
+Noteably when an MSS is being negotiated in the 3 way handshake- the lowest number wins. My device offered 1460 which is the standard. but the website went with 1452 due to network tunneling and encapsulation.
 
 ---
 
@@ -98,6 +88,9 @@ In this case, I was curious about generating the Network Break error. What I did
 tcp
 ```
 
+```text
+tcp.stream eq 0
+```
 ---
 
 # Packet Analysis
